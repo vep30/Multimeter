@@ -1,0 +1,46 @@
+{
+    "name": "InputControls",
+    "maps": [
+        {
+            "name": "ScrollMap",
+            "id": "827e13a5-de73-4d9b-878d-119c8d600432",
+            "actions": [
+                {
+                    "name": "ScrollAction",
+                    "type": "PassThrough",
+                    "id": "2cd1c2cc-ed3e-48a0-bfbf-3ec51e093264",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e25eb6a3-471b-4582-bde6-a34e884f373b",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Mouse control scheme",
+                    "action": "ScrollAction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Mouse control scheme",
+            "bindingGroup": "Mouse control scheme",
+            "devices": [
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}

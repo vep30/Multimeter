@@ -1,19 +1,42 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class MultimeterController : MonoBehaviour
 {
-    [SerializeField] private MultimeterView view;
     [SerializeField] private Renderer renderer;
+    [SerializeField] private MultimeterView view;
     [SerializeField] private Color highlightColor;
     
-    private bool isActive;
-    private Color originalColor;
+    private InputControls inputControls;
     private MultimeterModel model;
-
+    private Color originalColor;
+    private bool isActive;
+    
     public void Start()
     {
         originalColor = renderer.material.color;
+        inputControls = new InputControls();
         model = new MultimeterModel();
+        inputControls.Enable();
+        UpdateDisplay();
+        inputControls.ScrollMap.ScrollAction.performed += MouseScroll;
+    }
+    
+    private void OnDisable()
+    {
+        inputControls.ScrollMap.ScrollAction.performed -= MouseScroll;
+        inputControls.Disable();
+    }
+    
+    private void MouseScroll(InputAction.CallbackContext context)
+    {
+        float scroll = context.ReadValue<float>();
+        if (scroll == 0 || !isActive)
+            return;
+        
+        bool next = scroll < 0f;
+        transform.Rotate(0,0, next ? 90 : -90);
+        model.SetMode(GetMode(model.CurrentMode, next));
         UpdateDisplay();
     }
     
@@ -29,63 +52,20 @@ public class MultimeterController : MonoBehaviour
         renderer.material.color = originalColor;
     }
     
-    public void Update()
-    {
-        float scroll = Input.mouseScrollDelta.y;
-        if (scroll == 0 || !isActive)
-            return;
-
-        if (scroll > 0f)
-            GoNextMode();
-        else if (scroll < 0f)
-            GoPreviousMode();
-        
-        UpdateDisplay();
-    }
-    
-    private void GoNextMode()
-    {
-        transform.Rotate(0,0,90);
-        model.SetMode(GetNextMode(model.CurrentMode));
-    }
-    
-    private void GoPreviousMode()
-    {
-        transform.Rotate(0,0,-90);
-        model.SetMode(GetPreviousMode(model.CurrentMode));
-    }
-    
-    private MultimeterModel.Mode GetNextMode(MultimeterModel.Mode currentMode)
+    private MultimeterModel.Mode GetMode(MultimeterModel.Mode currentMode, bool isNext)
     {
         switch (currentMode)
         {
             case MultimeterModel.Mode.Resistance:
-                return MultimeterModel.Mode.Current;
+                return isNext ? MultimeterModel.Mode.Current : MultimeterModel.Mode.VoltageDC;
             case MultimeterModel.Mode.Current:
-                return MultimeterModel.Mode.VoltageAC;
+                return isNext ? MultimeterModel.Mode.VoltageAC : MultimeterModel.Mode.Resistance;
             case MultimeterModel.Mode.VoltageAC:
-                return MultimeterModel.Mode.VoltageDC;
+                return isNext ? MultimeterModel.Mode.VoltageDC : MultimeterModel.Mode.Current;
             case MultimeterModel.Mode.VoltageDC:
-                return MultimeterModel.Mode.Resistance;
+                return isNext ? MultimeterModel.Mode.Resistance : MultimeterModel.Mode.VoltageAC;
             default:
-                return MultimeterModel.Mode.Resistance;
-        }
-    }
-    
-    private MultimeterModel.Mode GetPreviousMode(MultimeterModel.Mode currentMode)
-    {
-        switch (currentMode)
-        {
-            case MultimeterModel.Mode.VoltageDC:
-                return MultimeterModel.Mode.VoltageAC;
-            case MultimeterModel.Mode.VoltageAC:
-                return MultimeterModel.Mode.Current;
-            case MultimeterModel.Mode.Current:
-                return MultimeterModel.Mode.Resistance;
-            case MultimeterModel.Mode.Resistance:
-                return MultimeterModel.Mode.VoltageDC;
-            default:
-                return MultimeterModel.Mode.VoltageDC;
+                return isNext ? MultimeterModel.Mode.Resistance : MultimeterModel.Mode.VoltageDC;
         }
     }
     

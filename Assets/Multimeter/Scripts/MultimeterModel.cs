@@ -46,7 +46,7 @@ public class MultimeterModel
     {
         return Mathf.Sqrt(Power / Resistance); // A = ?(P/R)
     }
-
+    
     private float CalculateVoltage(float current)
     {
         return current * Resistance; // V = A * R
