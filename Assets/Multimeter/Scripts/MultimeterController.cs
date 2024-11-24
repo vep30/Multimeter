@@ -22,12 +22,6 @@ public class MultimeterController : MonoBehaviour
         inputControls.ScrollMap.ScrollAction.performed += MouseScroll;
     }
     
-    private void OnDisable()
-    {
-        inputControls.ScrollMap.ScrollAction.performed -= MouseScroll;
-        inputControls.Disable();
-    }
-    
     private void MouseScroll(InputAction.CallbackContext context)
     {
         float scroll = context.ReadValue<float>();
@@ -72,5 +66,10 @@ public class MultimeterController : MonoBehaviour
     private void UpdateDisplay()
     {
         view.UpdateDisplay(model.GetDisplayValue());
+    }
+    
+    private void OnDestroy()
+    {
+        inputControls.ScrollMap.ScrollAction.performed -= MouseScroll;
     }
 }
